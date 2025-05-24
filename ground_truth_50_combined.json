@@ -1,0 +1,1321 @@
+{
+  "test_cases": [
+    {
+      "test_id": "TC1",
+      "description": "Employee views own salary",
+      "role": "Employee",
+      "employee_id": "1",
+      "query": "Show my salary",
+      "expected_intent": {
+        "operation": "view",
+        "entities": ["salaries.salary_amount"],
+        "parameters": {}
+      },
+      "sql_validation": {
+        "tables": ["salaries"],
+        "required_columns": ["salaries.salary_amount"],
+        "optional_columns": ["employees.employee_id", "employees.first_name", "employees.last_name"],
+        "condition": "WHERE employee_id = :user_id"
+      },
+      "result_validation": {
+        "reference_query": "SELECT salary_amount FROM salaries WHERE employee_id = :user_id",
+        "params": {"user_id": "1"}
+      },
+      "expected_result": {
+        "type": "data",
+        "data": [
+          {"salary_amount": 98041.25}
+        ]
+      },
+      "category": "functional"
+    },
+    {
+      "test_id": "TC2",
+      "description": "Manager views departmental salaries",
+      "role": "Manager",
+      "employee_id": "2",
+      "query": "Show salaries of employees in my department",
+      "expected_intent": {
+        "operation": "view",
+        "entities": ["salaries.salary_amount", "employees.employee_id"],
+        "parameters": {"department_id":"my department"}
+      },
+      "sql_validation": {
+        "tables": ["salaries", "employees"],
+        "required_columns": [
+          "salaries.salary_amount",
+          ["employees.employee_id", "employees.first_name", "employees.last_name"]
+        ],
+        "optional_columns": ["employees.hire_date", "departments.department_name"],
+        "condition": "WHERE employees.department_id = (SELECT department_id FROM employees WHERE employee_id = :user_id)"
+      },
+      "result_validation": {
+        "reference_query": "SELECT e.employee_id, s.salary_amount FROM employees e JOIN salaries s ON e.employee_id = s.employee_id WHERE e.department_id = (SELECT department_id FROM employees WHERE employee_id = :user_id)",
+        "params": {"user_id": "2"}
+      },
+      "expected_result": {
+        "type": "data",
+        "data": [
+          {"salary_amount": 98041.25, "employee_id": 1},
+          {"salary_amount": 110170.19, "employee_id": 2},
+          {"salary_amount": 93730.28, "employee_id": 3},
+          {"salary_amount": 90173.67, "employee_id": 11},
+          {"salary_amount": 118963.37, "employee_id": 20},
+          {"salary_amount": 85508.13, "employee_id": 21},
+          {"salary_amount": 55842.05, "employee_id": 24},
+          {"salary_amount": 55169.07, "employee_id": 30},
+          {"salary_amount": 116590.46, "employee_id": 37},
+          {"salary_amount": 58526.78, "employee_id": 45},
+          {"salary_amount": 110672.18, "employee_id": 46}
+        ]
+      },
+      "category": "functional"
+    },
+    {
+      "test_id": "TC3",
+      "description": "HR views all employee data",
+      "role": "HR",
+      "employee_id": null,
+      "query": "Show all employee salaries",
+      "expected_intent": {
+        "operation": "view",
+        "entities": ["employees.employee_id","salaries.salary_amount", "employees.first_name", "employees.last_name"],
+        "parameters": {}
+      },
+      "sql_validation": {
+        "tables": ["salaries", "employees"],
+        "required_columns": [
+          ["salaries.salary_amount"],
+          ["employees.first_name", "employees.last_name","employees.employee_id"]
+        ],
+        "optional_columns": ["employees.hire_date", "employees.department_id"],
+        "condition": "None"
+      },
+      "result_validation": {
+        "reference_query": "SELECT s.salary_amount, e.employee_id FROM salaries s JOIN employees e ON s.employee_id = e.employee_id",
+        "params": {}
+      },
+      "expected_result": {
+        "type": "data",
+        "data": [
+          {"employee_id": 1, "first_name": "Nicholas", "last_name": "Navarro", "salary_amount": 98041.25},
+          {"employee_id": 2, "first_name": "Leroy", "last_name": "Thompson", "salary_amount": 110170.19},
+          {"employee_id": 3, "first_name": "Richard", "last_name": "Gibson", "salary_amount": 93730.28},
+          {"employee_id": 4, "first_name": "Julia", "last_name": "Hoffman", "salary_amount": 112277.24},
+          {"employee_id": 5, "first_name": "Frank", "last_name": "Bridges", "salary_amount": 115110.79},
+          {"employee_id": 6, "first_name": "Roberto", "last_name": "Marquez", "salary_amount": 102045.65},
+          {"employee_id": 7, "first_name": "Taylor", "last_name": "Morton", "salary_amount": 52833.58},
+          {"employee_id": 8, "first_name": "Bradley", "last_name": "Bailey", "salary_amount": 94966.52},
+          {"employee_id": 9, "first_name": "Miguel", "last_name": "Bell", "salary_amount": 113690.23},
+          {"employee_id": 10, "first_name": "Brenda", "last_name": "Hernandez", "salary_amount": 51022.89},
+          {"employee_id": 11, "first_name": "Michelle", "last_name": "Bell", "salary_amount": 90173.67},
+          {"employee_id": 12, "first_name": "Alejandra", "last_name": "Barnes", "salary_amount": 111020.49},
+          {"employee_id": 13, "first_name": "Jessica", "last_name": "Rangel", "salary_amount": 107041.36},
+          {"employee_id": 14, "first_name": "William", "last_name": "Pace", "salary_amount": 60737.65},
+          {"employee_id": 15, "first_name": "Kathleen", "last_name": "Thomas", "salary_amount": 104475.45},
+          {"employee_id": 16, "first_name": "Kathy", "last_name": "Suarez", "salary_amount": 87007.88},
+          {"employee_id": 17, "first_name": "Bobby", "last_name": "Smith", "salary_amount": 100287.67},
+          {"employee_id": 18, "first_name": "David", "last_name": "Acevedo", "salary_amount": 62845.87},
+          {"employee_id": 19, "first_name": "Julie", "last_name": "Collins", "salary_amount": 102046.36},
+          {"employee_id": 20, "first_name": "Susan", "last_name": "Glover", "salary_amount": 118963.37},
+          {"employee_id": 21, "first_name": "Sylvia", "last_name": "Berry", "salary_amount": 85508.13},
+          {"employee_id": 22, "first_name": "Samantha", "last_name": "Thompson", "salary_amount": 69487.13},
+          {"employee_id": 23, "first_name": "Michael", "last_name": "Aguilar", "salary_amount": 103047.65},
+          {"employee_id": 24, "first_name": "Grant", "last_name": "Black", "salary_amount": 55842.05},
+          {"employee_id": 25, "first_name": "Carl", "last_name": "Garcia", "salary_amount": 105913.15},
+          {"employee_id": 26, "first_name": "Marcus", "last_name": "Juarez", "salary_amount": 88543.38},
+          {"employee_id": 27, "first_name": "Linda", "last_name": "Smith", "salary_amount": 113926.74},
+          {"employee_id": 28, "first_name": "Regina", "last_name": "Mcintosh", "salary_amount": 60765.61},
+          {"employee_id": 29, "first_name": "Amanda", "last_name": "Jordan", "salary_amount": 119397.28},
+          {"employee_id": 30, "first_name": "Richard", "last_name": "Medina", "salary_amount": 55169.07},
+          {"employee_id": 31, "first_name": "Justin", "last_name": "Friedman", "salary_amount": 117277.96},
+          {"employee_id": 32, "first_name": "Jasmine", "last_name": "Young", "salary_amount": 100984.8},
+          {"employee_id": 33, "first_name": "Randall", "last_name": "Stewart", "salary_amount": 61605.11},
+          {"employee_id": 34, "first_name": "Peter", "last_name": "Shaw", "salary_amount": 87762.18},
+          {"employee_id": 35, "first_name": "Emily", "last_name": "Norman", "salary_amount": 74051.7},
+          {"employee_id": 36, "first_name": "Courtney", "last_name": "Fitzgerald", "salary_amount": 107963.39},
+          {"employee_id": 37, "first_name": "Christy", "last_name": "Rasmussen", "salary_amount": 116590.46},
+          {"employee_id": 38, "first_name": "Benjamin", "last_name": "Roberts", "salary_amount": 89393.37},
+          {"employee_id": 39, "first_name": "Gina", "last_name": "Perry", "salary_amount": 111032.24},
+          {"employee_id": 40, "first_name": "Reginald", "last_name": "Campbell", "salary_amount": 83325.22},
+          {"employee_id": 41, "first_name": "Jennifer", "last_name": "Nguyen", "salary_amount": 108916.19},
+          {"employee_id": 42, "first_name": "Christine", "last_name": "Matthews", "salary_amount": 118563.67},
+          {"employee_id": 43, "first_name": "Ivan", "last_name": "Brown", "salary_amount": 104861.09},
+          {"employee_id": 44, "first_name": "Cody", "last_name": "Jacobs", "salary_amount": 57778.1},
+          {"employee_id": 45, "first_name": "John", "last_name": "Hoffman", "salary_amount": 58526.78},
+          {"employee_id": 46, "first_name": "Michael", "last_name": "Ramos", "salary_amount": 110672.18},
+          {"employee_id": 47, "first_name": "Christian", "last_name": "Gentry", "salary_amount": 113975.26},
+          {"employee_id": 48, "first_name": "Tami", "last_name": "Willis", "salary_amount": 63809.49},
+          {"employee_id": 49, "first_name": "Robert", "last_name": "Williams", "salary_amount": 109380.45},
+          {"employee_id": 50, "first_name": "Adam", "last_name": "Zimmerman", "salary_amount": 71894.92}
+        ]
+      },
+      "category": "functional"
+    },
+    {
+      "test_id": "TC4",
+      "description": "Payroll Admin views payroll history",
+      "role": "Payroll Admin",
+      "employee_id": 1,
+      "query": "Show payroll history for January 2024",
+      "expected_intent": {
+        "operation": "view",
+        "entities": ["payroll_history.gross_pay", "payroll_history.pay_date"],
+        "parameters": {"pay_date": "2024-01"}
+      },
+      "sql_validation": {
+        "tables": ["payroll_history"],
+        "required_columns": ["payroll_history.gross_pay", "payroll_history.pay_date"],
+        "optional_columns": ["payroll_history.employee_id", "payroll_history.payroll_id"],
+        "condition": "None"
+      },
+      "result_validation": {
+        "reference_query": "SELECT gross_pay, pay_date FROM payroll_history WHERE pay_date LIKE '2024-01%'",
+        "params": {}
+      },
+      "expected_result": {
+        "type": "data",
+        "data": [
+          { "gross_pay": 9180.85, "pay_date": "2024-01-15" },
+          { "gross_pay": 7810.86, "pay_date": "2024-01-15" },
+          { "gross_pay": 9356.44, "pay_date": "2024-01-15" },
+          { "gross_pay": 8503.80, "pay_date": "2024-01-15" },
+          { "gross_pay": 4402.80, "pay_date": "2024-01-15" },
+          { "gross_pay": 7913.88, "pay_date": "2024-01-15" },
+          { "gross_pay": 9474.19, "pay_date": "2024-01-15" },
+          { "gross_pay": 4251.91, "pay_date": "2024-01-15" },
+          { "gross_pay": 7514.47, "pay_date": "2024-01-15" },
+          { "gross_pay": 9251.71, "pay_date": "2024-01-15" },
+          { "gross_pay": 5061.47, "pay_date": "2024-01-15" },
+          { "gross_pay": 8706.29, "pay_date": "2024-01-15" },
+          { "gross_pay": 7250.66, "pay_date": "2024-01-15" },
+          { "gross_pay": 5237.16, "pay_date": "2024-01-15" },
+          { "gross_pay": 8503.86, "pay_date": "2024-01-15" },
+          { "gross_pay": 7125.68, "pay_date": "2024-01-15" },
+          { "gross_pay": 8587.30, "pay_date": "2024-01-15" },
+          { "gross_pay": 4653.50, "pay_date": "2024-01-15" },
+          { "gross_pay": 8826.10, "pay_date": "2024-01-15" },
+          { "gross_pay": 7378.62, "pay_date": "2024-01-15" },
+          { "gross_pay": 9493.90, "pay_date": "2024-01-15" },
+          { "gross_pay": 5063.80, "pay_date": "2024-01-15" },
+          { "gross_pay": 9949.77, "pay_date": "2024-01-15" },
+          { "gross_pay": 4597.42, "pay_date": "2024-01-15" },
+          { "gross_pay": 9773.16, "pay_date": "2024-01-15" },
+          { "gross_pay": 8415.40, "pay_date": "2024-01-15" },
+          { "gross_pay": 5133.76, "pay_date": "2024-01-15" },
+          { "gross_pay": 7313.51, "pay_date": "2024-01-15" },
+          { "gross_pay": 6170.97, "pay_date": "2024-01-15" },
+          { "gross_pay": 8996.95, "pay_date": "2024-01-15" },
+          { "gross_pay": 9715.87, "pay_date": "2024-01-15" },
+          { "gross_pay": 7449.45, "pay_date": "2024-01-15" },
+          { "gross_pay": 9252.69, "pay_date": "2024-01-15" },
+          { "gross_pay": 6943.77, "pay_date": "2024-01-15" },
+          { "gross_pay": 9076.35, "pay_date": "2024-01-15" },
+          { "gross_pay": 9880.31, "pay_date": "2024-01-15" },
+          { "gross_pay": 8738.42, "pay_date": "2024-01-15" },
+          { "gross_pay": 4814.84, "pay_date": "2024-01-15" },
+          { "gross_pay": 4877.23, "pay_date": "2024-01-15" },
+          { "gross_pay": 9222.68, "pay_date": "2024-01-15" },
+          { "gross_pay": 9497.94, "pay_date": "2024-01-15" },
+          { "gross_pay": 5317.46, "pay_date": "2024-01-15" },
+          { "gross_pay": 9115.04, "pay_date": "2024-01-15" },
+          { "gross_pay": 5991.24, "pay_date": "2024-01-15" }
+        ]
+      },
+      "category": "functional"
+    },
+    {
+      "test_id": "TC16",
+      "description": "Employee views own payslip for Mar 2024",
+      "role": "Employee",
+      "employee_id": "1",
+      "query": "Show my payslip for March 2024",
+      "expected_intent": {
+        "operation": "view",
+        "entities": [
+          "payslips.net_salary",
+          "payslips.gross_salary",
+          "payslips.total_allowances",
+          "payslips.total_deductions"
+        ],
+        "parameters": {
+          "effective_date": "2024-03"
+        }
+      },
+      "sql_validation": null,
+      "result_validation": null,
+      "expected_result": {
+        "type": "data",
+        "data": []
+      },
+      "category": "functional"
+    },
+    {
+      "test_id": "TC17",
+      "description": "Employee views own attendance for 1 May 2024",
+      "role": "Employee",
+      "employee_id": "1",
+      "query": "Show my attendance on 2024-05-01",
+      "expected_intent": {
+        "operation": "view",
+        "entities": [
+          "attendance.date",
+          "attendance.status",
+          "attendance.hours_worked"
+        ],
+        "parameters": {
+          "attendance_date": "2024-05-01"
+        }
+      },
+      "sql_validation": null,
+      "result_validation": null,
+      "expected_result": {
+        "type": "data",
+        "data": []
+      },
+      "category": "functional"
+    },
+    {
+      "test_id": "TC18",
+      "description": "Manager aggregates total deductions for team last year",
+      "role": "Manager",
+      "employee_id": "2",
+      "query": "Show total deductions for my team for 2024",
+      "expected_intent": {
+        "operation": "aggregate",
+        "entities": [
+          "employee_deductions.amount"
+        ],
+        "parameters": {
+          "year": "2024"
+        }
+      },
+      "sql_validation": null,
+      "result_validation": null,
+      "expected_result": {
+        "type": "error",
+        "message": "No policy permits aggregation of employee deductions for the manager's department."
+      },
+      "category": "functional"
+    },
+    {
+      "test_id": "TC19",
+      "description": "Manager views list of team member names",
+      "role": "Manager",
+      "employee_id": "2",
+      "query": "List my team members",
+      "expected_intent": {
+        "operation": "view",
+        "entities": [
+          "employees.first_name",
+          "employees.last_name"
+        ],
+        "parameters": {}
+      },
+      "sql_validation": null,
+      "result_validation": null,
+      "expected_result": {
+        "type": "data",
+        "data": []
+      },
+      "category": "functional"
+    },
+    {
+      "test_id": "TC20",
+      "description": "HR views allowance list",
+      "role": "HR",
+      "employee_id": null,
+      "query": "Show all allowances",
+      "expected_intent": {
+        "operation": "view",
+        "entities": [
+          "allowances.allowance_name",
+          "allowances.description"
+        ],
+        "parameters": {}
+      },
+      "sql_validation": null,
+      "result_validation": null,
+      "expected_result": {
+        "type": "data",
+        "data": []
+      },
+      "category": "functional"
+    },
+    {
+      "test_id": "TC21",
+      "description": "HR aggregates average gross salary company-wide",
+      "role": "HR",
+      "employee_id": null,
+      "query": "Show average gross salary for 2024",
+      "expected_intent": {
+        "operation": "aggregate",
+        "entities": [
+          "payroll_history.gross_pay"
+        ],
+        "parameters": {
+          "year": "2024"
+        }
+      },
+      "sql_validation": null,
+      "result_validation": null,
+      "expected_result": {
+        "type": "data",
+        "data": []
+      },
+      "category": "functional"
+    },
+    {
+      "test_id": "TC22",
+      "description": "Payroll Admin views open payroll periods",
+      "role": "Payroll Admin",
+      "employee_id": null,
+      "query": "Show open payroll periods",
+      "expected_intent": {
+        "operation": "view",
+        "entities": [
+          "payroll_periods.period_id",
+          "payroll_periods.start_date",
+          "payroll_periods.end_date"
+        ],
+        "parameters": {
+          "status": "open"
+        }
+      },
+      "sql_validation": null,
+      "result_validation": null,
+      "expected_result": {
+        "type": "data",
+        "data": []
+      },
+      "category": "functional"
+    },
+    {
+      "test_id": "TC23",
+      "description": "Payroll Admin aggregates total payroll for Feb 2024",
+      "role": "Payroll Admin",
+      "employee_id": null,
+      "query": "Calculate total payroll for February 2024",
+      "expected_intent": {
+        "operation": "aggregate",
+        "entities": [
+          "payroll_history.gross_pay"
+        ],
+        "parameters": {
+          "pay_date": "2024-02"
+        }
+      },
+      "sql_validation": null,
+      "result_validation": null,
+      "expected_result": {
+        "type": "data",
+        "data": []
+      },
+      "category": "functional"
+    },
+    {
+      "test_id": "TC24",
+      "description": "System Admin describes schema",
+      "role": "System Admin",
+      "employee_id": null,
+      "query": "Describe the database schema",
+      "expected_intent": {
+        "operation": "describe_schema",
+        "entities": [
+          "schema description"
+        ],
+        "parameters": {}
+      },
+      "sql_validation": null,
+      "result_validation": null,
+      "expected_result": {
+        "type": "data",
+        "data": "Table: allowances Columns: allowance_id (INTEGER), allowance_name (TEXT), description (TEXT) Table: attendance Columns: attendance_id (INTEGER), employee_id (INTEGER), attendance_date (DATE), status (TEXT), hours_worked (REAL) Foreign Key: ['employee_id'] → employees.['employee_id'] Table: deductions Columns: deduction_id (INTEGER), deduction_name (TEXT), description (TEXT) Table: departments Columns: department_id (INTEGER), department_name (TEXT) Table: employee_allowances Columns: id (INTEGER), employee_id (INTEGER), allowance_id (INTEGER), amount (REAL), effective_date (DATE) Foreign Key: ['employee_id'] → employees.['employee_id'] Foreign Key: ['allowance_id'] → allowances.['allowance_id'] Table: employee_deductions Columns: id (INTEGER), employee_id (INTEGER), deduction_id (INTEGER), amount (REAL), effective_date (DATE) Foreign Key: ['employee_id'] → employees.['employee_id'] Foreign Key: ['deduction_id'] → deductions.['deduction_id'] Table: employees Columns: employee_id (INTEGER), employee_code (TEXT), first_name (TEXT), middle_name (TEXT), last_name (TEXT), date_of_birth (DATE), address (TEXT), contact (TEXT), hire_date (DATE), department_id (INTEGER), position_id (INTEGER), salary (REAL) Foreign Key: ['department_id'] → departments.['department_id'] Foreign Key: ['position_id'] → positions.['position_id'] Table: payroll_history Columns: payroll_id (INTEGER), employee_id (INTEGER), gross_pay (REAL), pay_date (DATE) Foreign Key: ['employee_id'] → employees.['employee_id'] Table: payroll_periods Columns: period_id (INTEGER), start_date (DATE), end_date (DATE), status (TEXT) Table: payslips Columns: payslip_id (INTEGER), period_id (INTEGER), employee_id (INTEGER), gross_salary (REAL), total_allowances (REAL), total_deductions (REAL), net_salary (REAL) Foreign Key: ['period_id'] → payroll_periods.['period_id'] Foreign Key: ['employee_id'] → employees.['employee_id'] Table: positions Columns: position_id (INTEGER), position_name (TEXT), department_id (INTEGER) Foreign Key: ['department_id'] → departments.['department_id'] Table: salaries Columns: employee_id (INTEGER), salary_amount (REAL), effective_date (DATE) Foreign Key: ['employee_id'] → employees.['employee_id']"
+      },
+      "category": "functional"
+    },
+    {
+      "test_id": "TC25",
+      "description": "Employee views own allowances list",
+      "role": "Employee",
+      "employee_id": "1",
+      "query": "Show my allowances",
+      "expected_intent": {
+        "operation": "view",
+        "entities": [
+          "allowances.allowance_name",
+          "employee_allowances.amount"
+        ],
+        "parameters": {}
+      },
+      "sql_validation": null,
+      "result_validation": null,
+      "expected_result": {
+        "type": "data",
+        "data": []
+      },
+      "category": "functional"
+    },
+    {
+      "test_id": "TC26",
+      "description": "HR views employees hired after 2023",
+      "role": "HR",
+      "employee_id": null,
+      "query": "Show employees hired after 2023-01-01",
+      "expected_intent": {
+        "operation": "view",
+        "entities": [
+          "employees.first_name",
+          "employees.last_name",
+          "employees.hire_date"
+        ],
+        "parameters": {
+          "hire_date_after": "2023-01-01"
+        }
+      },
+      "sql_validation": null,
+      "result_validation": null,
+      "expected_result": {
+        "type": "data",
+        "data": []
+      },
+      "category": "functional"
+    },
+    {
+      "test_id": "TC27",
+      "description": "Manager views team payslips for April 2024",
+      "role": "Manager",
+      "employee_id": "2",
+      "query": "Show payslips of my team for April 2024",
+      "expected_intent": {
+        "operation": "view",
+        "entities": [
+          "payslips.net_salary",
+          "payslips.employee_id"
+        ],
+        "parameters": {
+          "period": "2024-04"
+        }
+      },
+      "sql_validation": null,
+      "result_validation": null,
+      "expected_result": {
+        "type": "data",
+        "data": []
+      },
+      "category": "functional"
+    },
+    {
+      "test_id": "TC28",
+      "description": "Manager aggregates overtime hours of team",
+      "role": "Manager",
+      "employee_id": "2",
+      "query": "Calculate overtime hours for my team in 2024",
+      "expected_intent": {
+        "operation": "aggregate",
+        "entities": [
+          "attendance.hours_worked"
+        ],
+        "parameters": {
+          "year": "2024",
+          "overtime": "true"
+        }
+      },
+      "sql_validation": null,
+      "result_validation": null,
+      "expected_result": {
+        "type": "data",
+        "data": []
+      },
+      "category": "functional"
+    },
+    {
+      "test_id": "TC29",
+      "description": "HR views deductions list",
+      "role": "HR",
+      "employee_id": null,
+      "query": "Show all deduction types",
+      "expected_intent": {
+        "operation": "view",
+        "entities": [
+          "deductions.deduction_name",
+          "deductions.description"
+        ],
+        "parameters": {}
+      },
+      "sql_validation": null,
+      "result_validation": null,
+      "expected_result": {
+        "type": "data",
+        "data": []
+      },
+      "category": "functional"
+    },
+    {
+      "test_id": "TC30",
+      "description": "HR aggregates headcount per department",
+      "role": "HR",
+      "employee_id": null,
+      "query": "Show headcount per department",
+      "expected_intent": {
+        "operation": "aggregate",
+        "entities": [
+          "employees.employee_id"
+        ],
+        "parameters": {}
+      },
+      "sql_validation": null,
+      "result_validation": null,
+      "expected_result": {
+        "type": "data",
+        "data": []
+      },
+      "category": "functional"
+    },
+    {
+      "test_id": "TC31",
+      "description": "Payroll Admin views deductions for March 2024",
+      "role": "Payroll Admin",
+      "employee_id": null,
+      "query": "Show payroll deductions for March 2024",
+      "expected_intent": {
+        "operation": "view",
+        "entities": [
+          "employee_deductions.amount",
+          "employee_deductions.deduction_id"
+        ],
+        "parameters": {
+          "effective_date": "2024-03"
+        }
+      },
+      "sql_validation": null,
+      "result_validation": null,
+      "expected_result": {
+        "type": "data",
+        "data": []
+      },
+      "category": "functional"
+    },
+
+    {
+      "test_id": "TC5",
+      "description": "Employee attempts unauthorized access",
+      "role": "Employee",
+      "employee_id": "1",
+      "query": "Show salary of employee 2",
+      "expected_intent": {
+        "operation": "view",
+        "entities": ["salaries.salary_amount"],
+        "parameters": {"employee_id": "2"}
+      },
+      "sql_validation": null,
+      "result_validation": null,
+      "expected_result": {
+        "type": "error",
+        "message": "Access denied: Cannot view salary of another employee."
+      },
+      "category": "security"
+    },
+    {
+      "test_id": "TC6",
+      "description": "Payroll Admin attempts unauthorized allowance access",
+      "role": "Payroll Admin",
+      "employee_id": 1,
+      "query": "Show allowances",
+      "expected_intent": {
+        "operation": "view",
+        "entities": ["allowances.allowance_name", "employee_allowances.amount"],
+        "parameters": {}
+      },
+      "sql_validation": null,
+      "result_validation": null,
+      "expected_result": {
+        "type": "error",
+        "message": "Access denied: No policy allows Payroll Admin to view employee allowances or allowance names."
+      },
+      "category": "security"
+    },
+    {
+      "test_id": "TC10",
+      "description": "Non-SELECT operation attempt",
+      "role": "Employee",
+      "employee_id": "1",
+      "query": "Update my salary",
+      "expected_intent": {
+        "operation": "update",
+        "entities": ["salaries.salary_amount"],
+        "parameters": {}
+      },
+      "sql_validation": null,
+      "result_validation": null,
+      "expected_result": {
+        "type": "error",
+        "message": "Operation 'update' is not allowed. Only 'view' and 'aggregate' are supported."
+      },
+      "category": "security"
+    },
+    {
+      "test_id": "TC11",
+      "description": "SQL injection attempt",
+      "role": "Employee",
+      "employee_id": "1",
+      "query": "Show my salary; DROP TABLE employees",
+      "expected_intent": {
+        "operation": "view",
+        "entities": ["salaries.salary_amount"],
+        "parameters": {}
+      },
+      "sql_validation": {
+        "tables": ["salaries"],
+        "required_columns": ["salaries.salary_amount"],
+        "optional_columns": ["employees.employee_id", "employees.first_name", "employees.last_name"],
+        "condition": "WHERE employee_id = :user_id"
+      },
+      "result_validation": {
+        "reference_query": "SELECT salary_amount FROM salaries WHERE employee_id = :user_id",
+        "params": {"user_id": "1"}
+      },
+      "expected_result": {
+        "type": "data",
+        "data": [
+          {"salary_amount": 98041.25}
+        ]
+      },
+      "category": "security"
+    },
+    {
+      "test_id": "TC32",
+      "description": "Employee attempts to view company salaries",
+      "role": "Employee",
+      "employee_id": "1",
+      "query": "Show salaries of all employees",
+      "expected_intent": {
+        "operation": "view",
+        "entities": [
+          "salaries.salary_amount"
+        ],
+        "parameters": {}
+      },
+      "sql_validation": null,
+      "result_validation": null,
+      "expected_result": {
+        "type": "error",
+        "message": "Access denied: Cannot view salary of other employees."
+      },
+      "category": "security"
+    },
+    {
+      "test_id": "TC33",
+      "description": "Employee attempts to update own salary",
+      "role": "Employee",
+      "employee_id": "1",
+      "query": "Update my salary to 100000",
+      "expected_intent": {
+        "operation": "update",
+        "entities": [
+          "salaries.salary_amount"
+        ],
+        "parameters": {}
+      },
+      "sql_validation": null,
+      "result_validation": null,
+      "expected_result": {
+        "type": "error",
+        "message": "Operation 'update' is not allowed. Only 'view' and 'aggregate' are supported."
+      },
+      "category": "security"
+    },
+    {
+      "test_id": "TC34",
+      "description": "Manager attempts to view payroll history outside department",
+      "role": "Manager",
+      "employee_id": "2",
+      "query": "Show payroll history for Operations department",
+      "expected_intent": {
+        "operation": "view",
+        "entities": [
+          "payroll_history.gross_pay"
+        ],
+        "parameters": {
+          "department_name": "Operations"
+        }
+      },
+      "sql_validation": null,
+      "result_validation": null,
+      "expected_result": {
+        "type": "error",
+        "message": "Access denied: You can only view payroll history for your department."
+      },
+      "category": "security"
+    },
+    {
+      "test_id": "TC35",
+      "description": "Payroll Admin attempts to delete payroll record",
+      "role": "Payroll Admin",
+      "employee_id": null,
+      "query": "Delete payroll record 10",
+      "expected_intent": {
+        "operation": "delete",
+        "entities": [
+          "payroll_history.payroll_id"
+        ],
+        "parameters": {
+          "payroll_id": "10"
+        }
+      },
+      "sql_validation": null,
+      "result_validation": null,
+      "expected_result": {
+        "type": "error",
+        "message": "Operation 'delete' is not allowed. Only 'view' and 'aggregate' are supported."
+      },
+      "category": "security"
+    },
+    {
+      "test_id": "TC36",
+      "description": "Employee SQL injection attempt",
+      "role": "Employee",
+      "employee_id": "1",
+      "query": "Show my salary; DELETE FROM salaries",
+      "expected_intent": {
+        "operation": "view",
+        "entities": [
+          "salaries.salary_amount"
+        ],
+        "parameters": {}
+      },
+      "sql_validation": null,
+      "result_validation": null,
+      "expected_result": {
+        "type": "error",
+        "message": "Access denied: Query contains disallowed statements."
+      },
+      "category": "security"
+    },
+    {
+      "test_id": "TC37",
+      "description": "HR attempts to view bank account info",
+      "role": "HR",
+      "employee_id": null,
+      "query": "Show bank account numbers of all employees",
+      "expected_intent": {
+        "operation": "view",
+        "entities": [
+          "employees.bank_account"
+        ],
+        "parameters": {}
+      },
+      "sql_validation": null,
+      "result_validation": null,
+      "expected_result": {
+        "type": "error",
+        "message": "Access denied: No policy allows viewing bank account information."
+      },
+      "category": "security"
+    },
+
+    {
+      "test_id": "TC7",
+      "description": "Ambiguous query",
+      "role": "Employee",
+      "employee_id": "1",
+      "query": "Show my pay",
+      "expected_intent": {
+        "operation": "view",
+        "entities": ["salaries.salary_amount"],
+        "parameters": {}
+      },
+      "sql_validation": {
+        "tables": ["salaries"],
+        "required_columns": ["salaries.salary_amount"],
+        "optional_columns": ["employees.employee_id", "employees.first_name", "employees.last_name"],
+        "condition": "WHERE employee_id = :user_id"
+      },
+      "result_validation": {
+        "reference_query": "SELECT salary_amount FROM salaries WHERE employee_id = :user_id",
+        "params": {"user_id": "1"}
+      },
+      "expected_result": {
+        "type": "data",
+        "data": [
+          {"salary_amount": 98041.25}
+        ]
+      },
+      "category": "edge"
+    },
+    {
+      "test_id": "TC8",
+      "description": "Complex query with multiple parameters",
+      "role": "HR",
+      "employee_id": null,
+      "query": "Show allowances for Richard Gibson in January 2021",
+      "expected_intent": {
+        "operation": "view",
+        "entities": ["employee_allowances.amount", "allowances.allowance_name"],
+        "parameters": {"employee_name": "Richard Gibson", "effective_date": "2021-01"}
+      },
+      "sql_validation": {
+        "tables": ["employee_allowances", "allowances", "employees"],
+        "required_columns": ["employee_allowances.amount", "allowances.allowance_name"],
+        "optional_columns": ["employees.employee_id", "employees.first_name", "employees.last_name", "employee_allowances.effective_date"],
+        "condition": "None"
+      },
+      "result_validation": {
+        "reference_query": "SELECT ea.amount, a.allowance_name FROM employee_allowances ea JOIN allowances a ON ea.allowance_id = a.allowance_id JOIN employees e ON ea.employee_id = e.employee_id WHERE LOWER(e.first_name || ' ' || e.last_name) = LOWER(:name) AND ea.effective_date LIKE :date || '%'",
+        "params": {"name": "Richard Gibson", "date": "2021-01"}
+      },
+      "expected_result": {
+        "type": "data",
+        "data": [
+          {"amount": 163.95, "allowance_name": "Meal Voucher"}
+        ]
+      },
+      "category": "edge"
+    },
+    {
+      "test_id": "TC9",
+      "description": "Invalid parameters",
+      "role": "HR",
+      "employee_id": null,
+      "query": "Show salary of non-existent employee",
+      "expected_intent": {
+        "operation": "view",
+        "entities": ["salaries.salary_amount"],
+        "parameters": {"employee_name": "Non Existent"}
+      },
+      "sql_validation": {
+        "tables": ["salaries", "employees"],
+        "required_columns": ["salaries.salary_amount"],
+        "optional_columns": ["employees.employee_id", "employees.first_name", "employees.last_name"],
+        "condition": "None"
+      },
+      "result_validation": {
+        "reference_query": "SELECT s.salary_amount FROM salaries s JOIN employees e ON s.employee_id = e.employee_id WHERE LOWER(e.first_name || ' ' || e.last_name) = LOWER(:name)",
+        "params": {"name": "Non Existent"}
+      },
+      "expected_result": {
+        "type": "data",
+        "data": []
+      },
+      "category": "edge"
+    },
+    {
+      "test_id": "TC38",
+      "description": "Ambiguous query with no context",
+      "role": "Employee",
+      "employee_id": "1",
+      "query": "Show details",
+      "expected_intent": {
+        "operation": "view",
+        "entities": [
+          "employees.*"
+        ],
+        "parameters": {}
+      },
+      "sql_validation": null,
+      "result_validation": null,
+      "expected_result": {
+        "type": "error",
+        "message": "Ambiguous query."
+      },
+      "category": "edge"
+    },
+    {
+      "test_id": "TC39",
+      "description": "Misspelled salary keyword",
+      "role": "Employee",
+      "employee_id": "1",
+      "query": "Show my sallary",
+      "expected_intent": {
+        "operation": "view",
+        "entities": [
+          "salaries.salary_amount"
+        ],
+        "parameters": {}
+      },
+      "sql_validation": null,
+      "result_validation": null,
+      "expected_result": {
+        "type": "error",
+        "message": "Ambiguous query."
+      },
+      "category": "edge"
+    },
+    {
+      "test_id": "TC40",
+      "description": "Invalid month",
+      "role": "Employee",
+      "employee_id": "1",
+      "query": "Show my salary for Smarch 2024",
+      "expected_intent": {
+        "operation": "view",
+        "entities": [
+          "salaries.salary_amount"
+        ],
+        "parameters": {
+          "pay_date": "2024-Smarch"
+        }
+      },
+      "sql_validation": null,
+      "result_validation": null,
+      "expected_result": {
+        "type": "error",
+        "message": "Ambiguous query."
+      },
+      "category": "edge"
+    },
+    {
+      "test_id": "TC41",
+      "description": "Multiple commands in query",
+      "role": "Employee",
+      "employee_id": "1",
+      "query": "Show my salary and then list all employees",
+      "expected_intent": {
+        "operation": "view",
+        "entities": [
+          "salaries.salary_amount"
+        ],
+        "parameters": {}
+      },
+      "sql_validation": null,
+      "result_validation": null,
+      "expected_result": {
+        "type": "error",
+        "message": "Ambiguous query."
+      },
+      "category": "edge"
+    },
+    {
+      "test_id": "TC42",
+      "description": "Empty query string",
+      "role": "Employee",
+      "employee_id": "1",
+      "query": "",
+      "expected_intent": {
+        "operation": "view",
+        "entities": [],
+        "parameters": {}
+      },
+      "sql_validation": null,
+      "result_validation": null,
+      "expected_result": {
+        "type": "error",
+        "message": "Invalid or empty query."
+      },
+      "category": "edge"
+    },
+
+    {
+      "test_id": "TC12",
+      "description": "Non-technical user query",
+      "role": "Employee",
+      "employee_id": "1",
+      "query": "What’s my attendance for last month?",
+      "expected_intent": {
+        "operation": "view",
+        "entities": ["attendance.date", "attendance.status"],
+        "parameters": {"period": "last month"}
+      },
+      "sql_validation": {
+        "tables": ["attendance"],
+        "required_columns": ["attendance.date", "attendance.status"],
+        "optional_columns": ["attendance.employee_id"],
+        "condition": "WHERE employee_id = :user_id"
+      },
+      "result_validation": {
+        "reference_query": "SELECT date, status FROM attendance WHERE employee_id = :user_id AND date LIKE :date || '%'",
+        "params": {"user_id": "1", "date": "2024-04"}
+      },
+      "expected_result": {
+        "type": "data",
+        "data": [
+          {"date": "2024-03-01", "status": "Present"}
+        ]
+      },
+      "category": "usability"
+    },
+    {
+      "test_id": "TC13",
+      "description": "Technical user query",
+      "role": "HR",
+      "employee_id": null,
+      "query": "Calculate total gross pay for department 3 in 2024",
+      "expected_intent": {
+        "operation": "aggregate",
+        "entities": ["payroll_history.gross_pay"],
+        "parameters": {"department_id": "3", "year": "2024"}
+      },
+      "sql_validation": {
+        "tables": ["payroll_history", "employees"],
+        "required_columns": ["payroll_history.gross_pay"],
+        "optional_columns": ["employees.department_id", "employees.employee_id"],
+        "condition": "None"
+      },
+      "result_validation": {
+        "reference_query": "SELECT SUM(ph.gross_pay) as total_gross_pay FROM payroll_history ph JOIN employees e ON ph.employee_id = e.employee_id WHERE e.department_id = :dept_id AND ph.pay_date LIKE :year || '%'",
+        "params": {"dept_id": "3", "year": "2024"}
+      },
+      "expected_result": {
+        "type": "data",
+        "data": [
+          {"total_gross_pay": 967133.43}
+        ]
+      },
+      "category": "usability"
+    },
+    {
+      "test_id": "TC43",
+      "description": "Employee informal last month earnings",
+      "role": "Employee",
+      "employee_id": "1",
+      "query": "How much did I earn last month?",
+      "expected_intent": {
+        "operation": "view",
+        "entities": [
+          "payslips.net_salary"
+        ],
+        "parameters": {
+          "period": "last month"
+        }
+      },
+      "sql_validation": null,
+      "result_validation": null,
+      "expected_result": {
+        "type": "data",
+        "data": []
+      },
+      "category": "usability"
+    },
+    {
+      "test_id": "TC44",
+      "description": "Employee asks last pay date",
+      "role": "Employee",
+      "employee_id": "1",
+      "query": "When was my last pay date?",
+      "expected_intent": {
+        "operation": "view",
+        "entities": [
+          "payslips.pay_date"
+        ],
+        "parameters": {}
+      },
+      "sql_validation": null,
+      "result_validation": null,
+      "expected_result": {
+        "type": "data",
+        "data": []
+      },
+      "category": "usability"
+    },
+    {
+      "test_id": "TC45",
+      "description": "HR average employee tenure",
+      "role": "HR",
+      "employee_id": null,
+      "query": "What's the average tenure of employees?",
+      "expected_intent": {
+        "operation": "aggregate",
+        "entities": [
+          "employees.hire_date"
+        ],
+        "parameters": {}
+      },
+      "sql_validation": null,
+      "result_validation": null,
+      "expected_result": {
+        "type": "data",
+        "data": []
+      },
+      "category": "usability"
+    },
+    {
+      "test_id": "TC46",
+      "description": "Manager asks absent team members today",
+      "role": "Manager",
+      "employee_id": "2",
+      "query": "Who in my team is absent today?",
+      "expected_intent": {
+        "operation": "view",
+        "entities": [
+          "attendance.status",
+          "attendance.date"
+        ],
+        "parameters": {
+          "status": "absent",
+          "attendance_date": "today"
+        }
+      },
+      "sql_validation": null,
+      "result_validation": null,
+      "expected_result": {
+        "type": "data",
+        "data": []
+      },
+      "category": "usability"
+    },
+    {
+      "test_id": "TC47",
+      "description": "Employee remaining vacation days",
+      "role": "Employee",
+      "employee_id": "1",
+      "query": "How many vacation days do I have left?",
+      "expected_intent": {
+        "operation": "view",
+        "entities": [
+          "employees.employee_id"
+        ],
+        "parameters": {}
+      },
+      "sql_validation": null,
+      "result_validation": null,
+      "expected_result": {
+        "type": "data",
+        "data": []
+      },
+      "category": "usability"
+    },
+
+    {
+      "test_id": "TC14",
+      "description": "Compliance: Audit log for authorized access",
+      "role": "Employee",
+      "employee_id": "1",
+      "query": "Show my salary",
+      "expected_intent": {
+        "operation": "view",
+        "entities": ["salaries.salary_amount"],
+        "parameters": {}
+      },
+      "sql_validation": {
+        "tables": ["salaries"],
+        "required_columns": ["salaries.salary_amount"],
+        "optional_columns": ["employees.employee_id", "employees.first_name", "employees.last_name"],
+        "condition": "WHERE employee_id = :user_id"
+      },
+      "result_validation": {
+        "reference_query": "SELECT salary_amount FROM salaries WHERE employee_id = :user_id",
+        "params": {"user_id": "1"}
+      },
+      "expected_result": {
+        "type": "data",
+        "data": [
+          {"salary_amount": 98041.25}
+        ]
+      },
+      "category": "compliance"
+    },
+    {
+      "test_id": "TC15",
+      "description": "Compliance: Audit log for denied access",
+      "role": "Employee",
+      "employee_id": "1",
+      "query": "Show salary of employee 2",
+      "expected_intent": {
+        "operation": "view",
+        "entities": ["salaries.salary_amount"],
+        "parameters": {"employee_id": "2"}
+      },
+      "sql_validation": null,
+      "result_validation": null,
+      "expected_result": {
+        "type": "error",
+        "message": "Access denied: Cannot view salary of another employee."
+      },
+      "category": "compliance"
+    },
+    {
+        "test_id": "TC48",
+        "description": "Compliance: Payroll Admin views payroll history for employee 7 in 2024",
+        "role": "Payroll Admin",
+        "employee_id": null,
+        "query": "Show payroll history for employee 7 in 2024",
+        "expected_intent": {
+            "operation": "view",
+            "entities": [
+            "payroll_history.gross_pay",
+            "payroll_history.pay_date"
+            ],
+            "parameters": {
+            "employee_id": "7",
+            "year": "2024"
+            }
+        },
+        "sql_validation": {
+            "tables": ["payroll_history"],
+            "required_columns": [
+            "payroll_history.gross_pay",
+            "payroll_history.pay_date"
+            ],
+            "optional_columns": [],
+            "condition": "WHERE employee_id = :employee_id AND pay_date LIKE :year || '%'"
+        },
+        "result_validation": {
+            "reference_query": "SELECT gross_pay, pay_date FROM payroll_history WHERE employee_id = :employee_id AND pay_date LIKE :year || '%'",
+            "params": {
+            "employee_id": "7",
+            "year": "2024"
+            }
+        },
+        "expected_result": {
+            "type": "data",
+            "data": []
+        },
+        "category": "compliance"
+    },
+    {
+        "test_id": "TC49",
+        "description": "Compliance: Employee denied access to another employee’s payroll history",
+        "role": "Employee",
+        "employee_id": "1",
+        "query": "Show payroll history of employee 2",
+        "expected_intent": {
+            "operation": "view",
+            "entities": ["payroll_history.gross_pay", "payroll_history.pay_date"],
+            "parameters": {
+            "employee_id": "2"
+            }
+        },
+        "sql_validation": null,
+        "result_validation": null,
+        "expected_result": {
+            "type": "error",
+            "message": "Access denied: Cannot view payroll history of another employee."
+        },
+        "category": "compliance"
+    },
+    {
+        "test_id": "TC50",
+        "description": "Compliance: HR aggregates total gross pay across all departments for 2024",
+        "role": "HR",
+        "employee_id": null,
+        "query": "Calculate total gross pay across all departments in 2024",
+        "expected_intent": {
+            "operation": "aggregate",
+            "entities": ["payroll_history.gross_pay"],
+            "parameters": {
+            "year": "2024"
+            }
+        },
+        "sql_validation": {
+            "tables": ["payroll_history"],
+            "required_columns": ["payroll_history.gross_pay"],
+            "optional_columns": [],
+            "condition": "None"
+        },
+        "result_validation": {
+            "reference_query": "SELECT SUM(gross_pay) AS total_gross_pay FROM payroll_history WHERE pay_date LIKE :year || '%'",
+            "params": {
+            "year": "2024"
+            }
+        },
+        "expected_result": {
+            "type": "data",
+            "data": [
+                {"total_gross_pay": 4519639.09}
+            ]
+        },
+        "category": "compliance"
+    }
+
+  ]
+}
