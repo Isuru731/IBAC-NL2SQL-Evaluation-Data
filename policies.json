@@ -1,0 +1,184 @@
+{
+    "policies": [
+      {
+        "role": "Employee",
+        "operation": "view",
+        "resource": "employees",
+        "condition": "WHERE employee_id = :user_id"
+      },
+      {
+        "role": "Employee",
+        "operation": "view",
+        "resource": "salaries",
+        "condition": "WHERE employee_id = :user_id"
+      },
+      {
+        "role": "Employee",
+        "operation": "view",
+        "resource": "allowances",
+        "condition": "WHERE allowance_id IN (SELECT allowance_id FROM employee_allowances WHERE employee_id = :user_id)"
+      },
+      {
+        "role": "Employee",
+        "operation": "view",
+        "resource": "employee_allowances",
+        "condition": "WHERE employee_id = :user_id"
+      },
+      {
+        "role": "Employee",
+        "operation": "view",
+        "resource": "payslips",
+        "condition": "WHERE employee_id = :user_id"
+      },
+      {
+        "role": "Employee",
+        "operation": "view",
+        "resource": "attendance",
+        "condition": "WHERE employee_id = :user_id"
+      },
+      {
+        "role": "Manager",
+        "operation": "view",
+        "resource": "employees",
+        "condition": "WHERE department_id = (SELECT department_id FROM employees WHERE employee_id = :user_id)"
+      },
+      {
+        "role": "Manager",
+        "operation": "view",
+        "resource": "salaries",
+        "condition": "WHERE employee_id IN (SELECT employee_id FROM employees WHERE department_id = (SELECT department_id FROM employees WHERE employee_id = :user_id))"
+      },
+      {
+        "role": "Manager",
+        "operation": "view",
+        "resource": "allowances",
+        "condition": "WHERE allowance_id IN (SELECT allowance_id FROM employee_allowances WHERE employee_id IN (SELECT employee_id FROM employees WHERE department_id = (SELECT department_id FROM employees WHERE employee_id = :user_id)))"
+      },
+      {
+        "role": "Manager",
+        "operation": "view",
+        "resource": "employee_allowances",
+        "condition": "WHERE employee_id IN (SELECT employee_id FROM employees WHERE department_id = (SELECT department_id FROM employees WHERE employee_id = :user_id))"
+      },
+      {
+        "role": "Manager",
+        "operation": "view",
+        "resource": "payslips",
+        "condition": "WHERE employee_id IN (SELECT employee_id FROM employees WHERE department_id = (SELECT department_id FROM employees WHERE employee_id = :user_id))"
+      },
+      {
+        "role": "Manager",
+        "operation": "view",
+        "resource": "attendance",
+        "condition": "WHERE employee_id IN (SELECT employee_id FROM employees WHERE department_id = (SELECT department_id FROM employees WHERE employee_id = :user_id))"
+      },
+      {
+        "role": "Manager",
+        "operation": "aggregate",
+        "resource": "salaries",
+        "condition": "WHERE employee_id IN (SELECT employee_id FROM employees WHERE department_id = (SELECT department_id FROM employees WHERE employee_id = :user_id))"
+      },
+      {
+        "role": "Manager",
+        "operation": "aggregate",
+        "resource": "payroll_history",
+        "condition": "WHERE employee_id IN (SELECT employee_id FROM employees WHERE department_id = (SELECT department_id FROM employees WHERE employee_id = :user_id))"
+      },
+      {
+        "role": "HR",
+        "operation": "view",
+        "resource": "employees",
+        "condition": "None"
+      },
+      {
+        "role": "HR",
+        "operation": "view",
+        "resource": "salaries",
+        "condition": "None"
+      },
+      {
+        "role": "HR",
+        "operation": "view",
+        "resource": "allowances",
+        "condition": "None"
+      },
+      {
+        "role": "HR",
+        "operation": "view",
+        "resource": "employee_allowances",
+        "condition": "None"
+      },
+      {
+        "role": "HR",
+        "operation": "view",
+        "resource": "payslips",
+        "condition": "None"
+      },
+      {
+        "role": "HR",
+        "operation": "view",
+        "resource": "attendance",
+        "condition": "None"
+      },
+      {
+        "role": "HR",
+        "operation": "aggregate",
+        "resource": "salaries",
+        "condition": "None"
+      },
+      {
+        "role": "HR",
+        "operation": "aggregate",
+        "resource": "payroll_history",
+        "condition": "None"
+      },
+      {
+        "role": "Payroll Admin",
+        "operation": "view",
+        "resource": "payslips",
+        "condition": "None"
+      },
+      {
+        "role": "Payroll Admin",
+        "operation": "view",
+        "resource": "payroll_history",
+        "condition": "None"
+      },
+      {
+        "role": "Payroll Admin",
+        "operation": "view",
+        "resource": "salaries",
+        "condition": "None"
+      },
+      {
+        "role": "Payroll Admin",
+        "operation": "aggregate",
+        "resource": "payroll_history",
+        "condition": "None"
+      },
+      {
+        "role": "Payroll Admin",
+        "operation": "view",
+        "resource": "payroll_periods",
+        "condition": "None"
+      },
+      {
+        "role": "System Admin",
+        "operation": "view",
+        "resource": "*",
+        "condition": "None"
+      },
+      {
+        "role": "System Admin",
+        "operation": "aggregate",
+        "resource": "*",
+        "condition": "None"
+      },
+      {
+        "role": "System Admin",
+        "operation": "describe_schema",
+        "resource": "schema description",
+        "condition": "None"
+      }
+    ]
+  }
